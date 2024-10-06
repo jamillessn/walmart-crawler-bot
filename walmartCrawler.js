@@ -2,45 +2,28 @@ const { chromium } = require('playwright');
 
 // Function to crawl and extract product data from Walmart
 async function crawlWalmart(url) {
-    const browser = await chromium.launch();
+    const browser = await chromium.launch({headless: false});
     const page = await browser.newPage();
-    
-    // Navigate to the specified URL
+
     await page.goto(url);
 
+    // Optional: Add a delay to mimic human behavior
+    await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 1000)); // Random delay
 
-    // Extract product data
-    const products = await page.$$eval('span', (items, title) => {
-        if (!items) {
-            console.log('Product data not found'); 
-            return
-        } else {
-            console.log('Product data found');
-            return;
-        }
-    });
+     // Extract product details using $$eval and mapping
+    const products = await page.$$eval('ul[data-testid="carousel-container"] li', (items) =>
+        items.map((item) => {
+        const title = item.querySelector('h3')?.innerText || ''; // Get product title
+        const price = item.querySelector('[data-automation-id="product-price"] .b')?.innerText || ''; // Get product price
+        const link = item.querySelector('a')?.href || ''; // Get product link
+        
+        return { title, price, link };
+        })
+    );
 
-    
-    // console.log(products)
-        // items.map(item => {
-        //     const title = item.querySelector('span[data-automation-id="product-title"]')?.innerText.trim() || 'No title';
-        //     const price = item.querySelector('div[data-automation-id="product-price"]')?.innerText.trim() || 'No price';
-        //     const link = item.querySelector('a[link-identifier]')?.href || 'No link';
-        //     return { title, price, link };
-        // }));
-    
-
-    // // Output the extracted products
-    // console.log(`Found ${products.length} products:`);
-    // products.forEach((product, index) => {
-    //     console.log(`Product ${index + 1}:`);
-    //     console.log(`Title: ${product.title}`);
-    //     console.log(`Price: ${product.price}`);
-    //     console.log(`Link: https://www.walmart.com${product.link}`);
-    //     console.log('---');
-    // });
-
-    // Close the browser
+    // Log the extracted products
+    console.log(products);
+   
     await browser.close();
 }
 

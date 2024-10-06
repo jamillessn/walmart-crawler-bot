@@ -4,7 +4,7 @@
   "description": "An e-commerce bot that returns product information from Amazon and Walmart\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[Walmart.",
   "main": "main.js",
   "scripts": {
-    "start": "node wc2.js"
+    "start": "node walmartCrawler.js"
   },
   "keywords": [],
   "author": "Jamille Sison",

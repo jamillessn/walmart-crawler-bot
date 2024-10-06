@@ -24,5 +24,5 @@ async function crawlWalmart(url) {
     await browser.close();
 }
 
-const walmartUrl = 'https://www.walmart.com/cp/groceriesessentials/1735450'; 
+const walmartUrl = 'https://www.amazon.com/fmc/everyday-essentials-category?_encoding=UTF8&node=16322721&fpw=new&fpl=fresh&ref_=pd_bap_d_eemb_p_d_ba_16322721_static_i'; 
 crawlWalmart(walmartUrl);
