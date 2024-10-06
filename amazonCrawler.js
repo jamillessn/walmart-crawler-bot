@@ -1,28 +1,36 @@
 const { chromium } = require('playwright');
+const TelegramBot = require('node-telegram-bot-api');
+const cron = require('node-cron');
+require('dotenv').config();
+
+// Telegram bot token
+const token = process.env.TOKEN;
+const bot = new TelegramBot(token, { polling: true, autoStop: true });
+
+//amazonurl
+const amazonUrl = 'https://www.amazon.com/s?i=specialty-aps&bbn=16225013011&rh=n%3A%2116225013011%2Cn%3A2975312011&ref=nav_em__nav_desktop_sa_intl_dogs_0_2_21_2';
 
 // Function to crawl and extract product data from Walmart
-async function crawlWalmart(url) {
-    const browser = await chromium.launch({headless: false});
+async function crawlAmazon(url) {
+    const browser = await chromium.launch({ headless: false });
     const page = await browser.newPage();
+    
 
     await page.goto(url);
-
-    // Optional: Add a delay to mimic human behavior
     await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 1000)); // Random delay
 
-    const divCounts = await page.$$eval('div[data-automation-id="product-price"]', (divs, min) => divs.length >= min, 10);
 
-    const desc = await page.$$eval('div', (divs) => divs.map((div, i) => {
-        return {
-            index: i,
-            description: div.innerText
-        };
-    }));
-    
-    console.log(desc);
-    console.log(`Number of div elements: ${divCounts}`);
+    const products = await page.$$eval('span[data-component-type="s-search-results"]', (items) =>
+        items.map((item) => {
+            const title = item.querySelector('[data-component-type="s-search-result"')?.innerText || ''; 
+            return { title };
+        })
+    );
+
+    console.log(products);
     await browser.close();
+    
 }
 
-const walmartUrl = 'https://www.amazon.com/fmc/everyday-essentials-category?_encoding=UTF8&node=16322721&fpw=new&fpl=fresh&ref_=pd_bap_d_eemb_p_d_ba_16322721_static_i'; 
-crawlWalmart(walmartUrl);
+
+crawlAmazon(amazonUrl);
