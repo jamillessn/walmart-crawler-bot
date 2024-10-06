@@ -81,13 +81,6 @@ bot.onText(/\/start/, async (msg) => {
             bot.sendMessage(chatIdFromUser, message);
         });
 
-        
-        // Notify completion of fetching products with a delay
-        setTimeout(() => {
-            bot.sendMessage(chatIdFromUser, "Fetching products complete. Updated products will be sent after 2 minutes.");
-        }, 10000); // 10 seconds delay
-
-
 
     } catch (error) {
         bot.sendMessage(chatIdFromUser, 'Failed to retrieve products. Please try again later.');
