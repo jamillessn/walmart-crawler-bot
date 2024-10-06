@@ -26,37 +26,6 @@ async function extractProductData() {
         console.log('The element with data-testid "carousel-container" does not exist on the page.');
         bot.sendMessage('The element with data-testid "carousel-container" does not exist on the page.');
     }
-
-    // Wait for the product container to load (wait for ul with data-testid="carousel-container")
-    // console.log('Looking for any element with data test id "carousel-container"...');
-    // await page.getByTestId('carousel-container');
-
-    // // Extract product data
-    // console.log('Looking for any element with data test id "carousel-container"...');
-    
-    // const products = await page.$$eval('ul li', items => {
-    //     return items.map(item => {
-    //         const title = item.querySelector('span[data-automation-id="product-title"]')?.innerText || 'No title';
-    //         const price = item.querySelector('div[data-automation-id="product-price"]')?.innerText || 'No price';
-    //         const link = item.querySelector('a[link-identifier]')?.getAttribute('href') || 'No link';
-
-    //         return {
-    //             title: title.trim(),
-    //             price: price.trim(),
-    //             link: link ? `https://www.walmart.com${link.trim()}` : 'No link'
-    //         };
-    //     });
-    // });
-
-    // // Log the results
-    // products.forEach((product, index) => {
-    //     console.log(`Product ${index + 1}:`);
-    //     console.log(`Title: ${product.title}`);
-    //     console.log(`Price: ${product.price}`);
-    //     console.log(`Link: ${product.link}`);
-    //     console.log('---');
-    // });
-
     // Close the browser
     await browser.close();
 }
@@ -66,14 +35,6 @@ bot.onText(/\/getproducts/, async (msg) => {
     const chatId = msg.chat.id;
     console.log("Chat id: " + chatId);
     const productData = await extractProductData(walmartUrl);
-
-    // if (typeof productData === 'string') {
-    //     bot.sendMessage(chatId, productData); // Send error message to Telegram
-    // } else {
-    //     productData.forEach((product) => {
-    //         bot.sendMessage(chatId, `Product: ${product.title}\nPrice: ${product.price}\nLink: ${product.link}`);
-    //     });
-    // }
 });
 
 const walmartUrl = 'https://www.walmart.com/cp/groceriesessentials/1735450';
