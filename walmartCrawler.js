@@ -1,10 +1,15 @@
 const { chromium } = require('playwright');
 const TelegramBot = require('node-telegram-bot-api');
+const cron = require('node-cron');
 require('dotenv').config();
+
 
 // Telegram bot token
 const token = process.env.TOKEN;
 const bot = new TelegramBot(token, { polling: true, autoStop: true });
+
+// Global variable for storing chatId from user
+let chatIdFromUser = null; 
 
 // Function to crawl and extract product data from Walmart
 async function crawlWalmart(url) {
@@ -31,28 +36,56 @@ async function crawlWalmart(url) {
     return products; // Return the product data
 }
 
-// Listen for /getproducts command
-bot.onText(/\/start/, async (msg) => {
-    const chatId = msg.chat.id;
+// Function to send product data to the Telegram bot
+async function sendProductUpdates() {
     const walmartUrl = 'https://www.walmart.com/cp/groceriesessentials/1735450';
 
     try {
-        bot.sendMessage(chatId, 'Crawling Walmart for products...');
+        bot.sendMessage(chatIdFromUser, 'Crawling Walmart for products...');
         const productData = await crawlWalmart(walmartUrl);
 
         if (productData.length === 0) {
-            bot.sendMessage(chatId, 'No products found.');
+            bot.sendMessage(chatIdFromUser, 'No products found.');
             return;
         }
 
-         // Send each product as a separate message in the desired format
-         productData.forEach(product => {
+        // Send each product as a separate message in the desired format
+        productData.forEach(product => {
             const message = `[ITEM DESCRIPTION] ${product.title}\n[ITEM PRICE] ${product.price}\n[ITEM LINK] ${product.link}`;
-            bot.sendMessage(chatId, message);
+            bot.sendMessage(chatIdFromUser, message);
         });
 
     } catch (error) {
         bot.sendMessage(chatId, 'Failed to retrieve products. Please try again later.');
+        console.error(error);
+    }
+}
+
+// Listen for /start command
+bot.onText(/\/start/, async (msg) => {
+    chatIdFromUser = msg.chat.id; // Assign chatId to global variable
+    const walmartUrl = 'https://www.walmart.com/cp/groceriesessentials/1735450';
+
+    try {
+        bot.sendMessage(chatIdFromUser, 'Starting fetching products...');
+        const productData = await crawlWalmart(walmartUrl);
+
+        if (productData.length === 0) {
+            bot.sendMessage(chatIdFromUser, 'No products found.');
+            return;
+        }
+
+        // Send each product as a separate message in the desired format
+        productData.forEach((product, i) => {
+            const message = `#${i + 1}\n[ITEM DESCRIPTION] ${product.title}\n[ITEM PRICE] ${product.price}\n[ITEM LINK] ${product.link}`;
+            bot.sendMessage(chatIdFromUser, message);
+        });
+
+        bot.sendMessage(chatIdFromUser, `Finished fetching all products. Sending updated products in 2 minutes.`);
+        console.log("Done fetching products. Sending updated products in 2 minutes.")
+
+    } catch (error) {
+        bot.sendMessage(chatIdFromUser, 'Failed to retrieve products. Please try again later.');
         console.error(error);
     }
 });
@@ -72,6 +105,16 @@ bot.onText(/\/stop/, (msg) => {
     });
 });
 
+// Schedule the script to run every 2 minutes
+cron.schedule('*/2 * * * *', () => {
+    if (chatIdFromUser) {  // Only run if chatIdFromUser is set
+        console.log('Running script every 2 minutes...');
+        bot.sendMessage(chatIdFromUser, 'Sending updated product information...');
+        sendProductUpdates();
+    } else {
+        console.log('No user has started the bot. Skipping update...');
+    }
+});
 // Optional: Crawl Walmart on startup if needed
 // const walmartUrl = 'https://www.walmart.com/cp/groceriesessentials/1735450';
 // crawlWalmart(walmartUrl);
