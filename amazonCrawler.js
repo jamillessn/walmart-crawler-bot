@@ -8,7 +8,7 @@ const token = process.env.TOKEN;
 const bot = new TelegramBot(token, { polling: true, autoStop: true });
 
 //amazonurl
-const amazonUrl = 'https://www.amazon.com/s?i=specialty-aps&bbn=16225013011&rh=n%3A%2116225013011%2Cn%3A2975312011&ref=nav_em__nav_desktop_sa_intl_dogs_0_2_21_2';
+const amazonUrl = 'https://www.amazon.com/fmc/everyday-essentials-category?_encoding=UTF8&node=16322721&fpw=new&fpl=fresh&ref_=pd_bap_d_eemb_p_d_ba_16322721_static_i';
 
 // Function to crawl and extract product data from Walmart
 async function crawlAmazon(url) {
