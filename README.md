@@ -5,9 +5,8 @@ This Telegram bot automatically crawls product data from Walmart using Playwrigh
   ## Table of Contents
   - [Features](#features)
   - [Technologies Used](#technologies)
-  - Usage
-  - Environment Variables
-  - Commands
+  - [Usage](#usage)
+  - [Commands](#commands)
 
   ## Features
   - 🛒 Automated Web Scraping: Fetches live product information from Walmart using Playwright, including product title, price, and link.
